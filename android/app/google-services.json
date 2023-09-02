@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "864499779169",
+    "project_id": "rncompraonline",
+    "storage_bucket": "rncompraonline.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864499779169:android:f3c371f891ac43865e8c20",
+        "android_client_info": {
+          "package_name": "com.rncompraonline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "864499779169-f3k91ilbcou4mi8l1fmu6q3d3d2mjfvh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0AD5_VCDEJKauW8Tm-Fl5JKwE7FJTuGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "864499779169-f3k91ilbcou4mi8l1fmu6q3d3d2mjfvh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

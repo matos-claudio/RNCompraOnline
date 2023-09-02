@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, ScrollView, StatusBar} from 'react-native';
+import {Alert, SafeAreaView, ScrollView, StatusBar} from 'react-native';
 import styled from 'styled-components/native';
 
 import WelcomeImage from '../../assets/images/welcome-image.png';
-import { fetchUsers } from '../services/user-service';
+import {login} from '../services/user-service';
+import {ILoginUser} from '../common/user-interface';
+import {useNavigation} from '@react-navigation/native';
+import {Loading} from '../components/loading';
 
 type ButtonProps = {
   color: string;
@@ -52,17 +55,38 @@ const FooterContainer = styled.View`
 `;
 
 const Login = () => {
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const users = await fetchUsers();
-        console.log(`Users: ${JSON.stringify(users)}`);
-      } catch (error) {
-        console.log(`error: ${error}`);
-      }
-    };
-    loadUsers();
-  });
+  const navigation = useNavigation();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const validateFields = (): boolean => {
+    if (!email || !password) {
+      Alert.alert('Ops!', 'Por favor, preencha todos os campos');
+      return false;
+    }
+    return true;
+  };
+
+  const loginUser = async () => {
+    if (!validateFields()) {
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const user: ILoginUser = {
+        email,
+        password,
+      };
+      await login(user);
+      navigation.navigate('Home');
+    } catch (error) {
+      Alert.alert('Ops!', 'Confira suas credenciais!');
+    } finally {
+      setIsLoading(false);
+    }
+    // setIsLoading(false);
+  };
 
   return (
     <ScrollView
@@ -75,16 +99,23 @@ const Login = () => {
           placeholder="e-mail"
           placeholderTextColor={'#fefefe'}
           autoCapitalize="none"
+          onChangeText={e => setEmail(e)}
+          value={email}
         />
         <Input
           placeholder="senha"
           placeholderTextColor={'#fefefe'}
           autoCapitalize="none"
           secureTextEntry
+          onChangeText={p => setPassword(p)}
+          value={password}
         />
-        <Button color="#e77a6c" activeOpacity={0.7}>
+        <Button color="#e77a6c" activeOpacity={0.7} onPress={loginUser}>
           <Label>LOGIN</Label>
         </Button>
+        {isLoading && (
+          <Loading backgroundColor="#FFF" isLoading loadingColor="#e77a6c" />
+        )}
       </InputContainer>
       <FooterContainer>
         <Button color="#1a182b" activeOpacity={0.7}>

@@ -1,11 +1,12 @@
 import api from './api';
+import {IUserReponse, ILoginUser} from '../common/user-interface';
 
-interface UserReponse {
-  name: string;
-  email: string;
-}
-
-export const fetchUsers = async (): Promise<UserReponse> => {
-  const response = await api.get<UserReponse>('/read-user');
+export const fetchUsers = async (): Promise<IUserReponse> => {
+  const response = await api.get<IUserReponse>('/read-user');
   return response.data;
+};
+
+export const login = async (user: ILoginUser): Promise<Number> => {
+  const response = await api.post('/login-user', user);
+  return response.status;
 };
