@@ -9,6 +9,7 @@ import Login from '../screens/login';
 import Home from '../screens/home';
 import OrderList from '../screens/order-list';
 import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
 
 // Type com as telas do App
 type RootStackParamList = {
@@ -17,8 +18,6 @@ type RootStackParamList = {
   Login: undefined;
   Home: undefined;
 };
-
-// const Stack = createNativeStackNavigator();
 
 declare global {
   namespace ReactNavigation {
@@ -44,14 +43,26 @@ const HomeStackScreen = () => (
 const OrderStack = createNativeStackNavigator();
 const OrderStackScreen = () => (
   <OrderStack.Navigator>
-    <OrderStack.Screen name="OrderListScreen" component={OrderList} />
+    <OrderStack.Screen
+      name="OrderListScreen"
+      component={OrderList}
+      options={{
+        headerShown: false,
+      }}
+    />
   </OrderStack.Navigator>
 );
 
 const SettingsStack = createNativeStackNavigator();
 const SettingsScreen = () => (
   <SettingsStack.Navigator>
-    <SettingsStack.Screen name="OrderListScreen" component={OrderList} />
+    <SettingsStack.Screen
+      name="OrderListScreen"
+      component={OrderList}
+      options={{
+        headerShown: false,
+      }}
+    />
   </SettingsStack.Navigator>
 );
 
@@ -78,13 +89,63 @@ const Routes = () => {
     async function getUserToken() {
       await messaging().registerDeviceForRemoteMessages();
       const token = await messaging().getToken();
+      // chama de API para atualizar o token no DB
       console.log(`>>>> ${token}`);
     }
     getUserToken();
   }, []);
+
+  useEffect(() => {
+    messaging().onMessage(async remoteMessage => {
+      PushNotification.localNotification({
+        title: remoteMessage!.notification!.title,
+        message: remoteMessage!.notification?.body,
+      });
+    });
+  }, []);
+
+  const Stack = createNativeStackNavigator();
+
+  const HomeTabs = () => (
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        headerShown: false,
+        tabBarIcon: props => <TabBarIcon {...props} name={route.name} />,
+        tabBarActiveTintColor: '#62C567',
+        tabBarInactiveTintColor: 'gray',
+      })}>
+      <Tab.Screen name="Home" component={HomeStackScreen} />
+      <Tab.Screen name="Compras" component={OrderStackScreen} />
+      <Tab.Screen name="Ajustes" component={SettingsScreen} />
+    </Tab.Navigator>
+  );
+
   return (
     <NavigationContainer>
-      <Tab.Navigator
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Welcome"
+          component={Welcome}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeTabs}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack.Navigator>
+      {/* <Tab.Navigator
         screenOptions={({route}) => ({
           headerShown: false,
           tabBarIcon: props => <TabBarIcon {...props} name={route.name} />,
@@ -94,19 +155,7 @@ const Routes = () => {
         <Tab.Screen name="Home" component={HomeStackScreen} />
         <Tab.Screen name="Compras" component={OrderStackScreen} />
         <Tab.Screen name="Ajustes" component={SettingsScreen} />
-      </Tab.Navigator>
-      {/* <Stack.Navigator initialRouteName="Welcome">
-      <Stack.Screen name="Welcome" component={Welcome} />
-      <Stack.Screen name="Browser" component={Browser} />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen name="Home" component={Home} />
-    </Stack.Navigator> */}
+      </Tab.Navigator> */}
     </NavigationContainer>
   );
 };
